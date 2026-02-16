@@ -1,31 +1,13 @@
 *** Settings ***
-Documentation    Keywords for fault injection with libfiu
-Library          Process
-Library          OperatingSystem
+Documentation    High-level keywords for robustness testing with fault injection
+Library          ../resources/lib/robustness.py
 
 *** Keywords ***
-Install Libfiu
-    [Documentation]    Install libfiu development package and utilities
-    
-    Log    Installing libfiu-dev and fiu-utils
-    ${result}=    Run Process    sudo    apt-get    update    -qq
-    ${result}=    Run Process    sudo    apt-get    install    -y    libfiu-dev    fiu-utils
-    Should Be Equal As Integers    ${result.rc}    0
-    Log    libfiu installed successfully
+Setup Fault Injection Environment
+    [Documentation]    Install and setup fault injection tools
+    Install Libfiu
 
-Start Bitcoin Node With Fault Injection
-    [Documentation]    Start a Bitcoin node with libfiu fault injection
-    [Arguments]    ${bitcoind_path}    ${datadir}    ${port}    ${rpcport}    ${connect}    ${probability}=0.005
-    
-    Log    Starting Bitcoin node with fault injection (probability=${probability})
-    
-    ${fault_spec}=    Set Variable    enable_random name=posix/io/*,probability=${probability}
-    
-    ${cmd}=    Create List    fiu-run    -x    -c    ${fault_spec}
-    ...    ${bitcoind_path}    -regtest    -datadir=${datadir}    -port=${port}    -rpcport=${rpcport}    -connect=${connect}    -daemon
-    
-    ${result}=    Run Process    @{cmd}
-    Log    ${result.stdout}
-    Log    ${result.stderr}
-    Should Be Equal As Integers    ${result.rc}    0
-    Sleep    3s    Wait for node to start with fault injection
+Start Victim Node With Retries
+    [Documentation]    Start victim node with fault injection and automatic retries
+    [Arguments]    ${datadir}    ${port}    ${rpcport}    ${connect_addr}    ${probability}
+    Start Victim Node With Fault Injection    ${datadir}    ${port}    ${rpcport}    ${connect_addr}    probability=${probability}

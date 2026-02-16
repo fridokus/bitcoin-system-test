@@ -34,6 +34,7 @@ jobs:
     
     - name: Run libfiu-1 test
       run: |
+        mkdir -p results
         robot --outputdir results tests/robustness/libfiu-1.robot
     
     - name: Upload test results
@@ -42,3 +43,13 @@ jobs:
       with:
         name: test-results
         path: results/
+    
+    - name: Upload debug logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-logs
+        path: |
+          results/*.log
+          /tmp/node_generator/regtest/debug.log
+          /tmp/node_victim/regtest/debug.log
