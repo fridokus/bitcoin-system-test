@@ -36,6 +36,9 @@ def run_robot_test(test_file, test_suite_name=None):
     else:
         env['PYTHONPATH'] = current_dir
     
+    # Export results directory for Python libraries to use
+    env['ROBOT_OUTPUT_DIR'] = str(results_dir)
+    
     # Run robot with the output directory
     cmd = ["robot", "--outputdir", str(results_dir), test_file]
     
