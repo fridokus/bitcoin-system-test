@@ -30,7 +30,14 @@ class BitcoinCore:
         self.logger = get_logger('bitcoin_core')
 
     def download_bitcoin_core(self, version=None):
-        """Download and extract Bitcoin Core release.
+        """Download and extract Bitcoin Core release with integrity verification.
+        
+        Downloads the Bitcoin Core tarball, SHA256SUMS, and SHA256SUMS.asc files,
+        then verifies the checksum and signature before extraction.
+        
+        Note: GPG signature verification requires Bitcoin Core builder keys to be
+        imported into the GPG keyring. Keys can be found at:
+        https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys
         
         Args:
             version: Version to download (uses default if not specified)
@@ -39,18 +46,148 @@ class BitcoinCore:
             version = self.bitcoin_version
         
         tarball = f"bitcoin-{version}-x86_64-linux-gnu.tar.gz"
-        url = f"https://bitcoincore.org/bin/bitcoin-core-{version}/{tarball}"
+        base_url = f"https://bitcoincore.org/bin/bitcoin-core-{version}"
+        tarball_url = f"{base_url}/{tarball}"
+        sha256sums_url = f"{base_url}/SHA256SUMS"
+        sha256sums_asc_url = f"{base_url}/SHA256SUMS.asc"
         
+        timeout = config.BITCOIN_DOWNLOAD_TIMEOUT
+        
+        # Download the tarball
         self.logger.info(f"Downloading Bitcoin Core {version}")
-        result = subprocess.run(["wget", url], capture_output=True, text=True)
+        result = subprocess.run(
+            ["wget", "--timeout", str(timeout), tarball_url],
+            capture_output=True,
+            text=True
+        )
         
         if result.returncode != 0:
+            # Check if it's a timeout error (wget exit code 4)
+            if result.returncode == 4:
+                self.logger.error(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
+                raise RuntimeError(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
             self.logger.error(f"Failed to download Bitcoin Core: {result.stderr}")
             raise RuntimeError(f"Failed to download Bitcoin Core: {result.stderr}")
         
         if not os.path.exists(tarball):
             raise RuntimeError(f"Download file {tarball} not found")
         
+        # Download SHA256SUMS
+        self.logger.info("Downloading SHA256SUMS")
+        result = subprocess.run(
+            ["wget", "--timeout", str(timeout), sha256sums_url],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode != 0:
+            if result.returncode == 4:
+                self.logger.error(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
+                raise RuntimeError(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
+            self.logger.error(f"Failed to download SHA256SUMS: {result.stderr}")
+            raise RuntimeError(f"Failed to download SHA256SUMS: {result.stderr}")
+        
+        # Download SHA256SUMS.asc
+        self.logger.info("Downloading SHA256SUMS.asc")
+        result = subprocess.run(
+            ["wget", "--timeout", str(timeout), sha256sums_asc_url],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode != 0:
+            if result.returncode == 4:
+                self.logger.error(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
+                raise RuntimeError(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
+            self.logger.error(f"Failed to download SHA256SUMS.asc: {result.stderr}")
+            raise RuntimeError(f"Failed to download SHA256SUMS.asc: {result.stderr}")
+        
+        # Verify GPG signature
+        self.logger.info("Verifying GPG signature of SHA256SUMS")
+        result = subprocess.run(
+            ["gpg", "--status-fd", "1", "--verify", "SHA256SUMS.asc", "SHA256SUMS"],
+            capture_output=True,
+            text=True
+        )
+        
+        # Parse GPG status output for reliable verification
+        # --status-fd outputs machine-readable status lines
+        has_good_signature = False
+        has_valid_signature = False
+        missing_key = False
+        
+        for line in result.stdout.splitlines():
+            if line.startswith("[GNUPG:] GOODSIG"):
+                has_good_signature = True
+            elif line.startswith("[GNUPG:] VALIDSIG"):
+                has_valid_signature = True
+            elif line.startswith("[GNUPG:] NO_PUBKEY"):
+                missing_key = True
+        
+        # Check for missing key first
+        if missing_key:
+            self.logger.warning(
+                "GPG signature verification failed: builder keys not imported. "
+                "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
+            )
+            self.logger.warning(f"GPG output: {result.stderr}")
+            raise RuntimeError(
+                "GPG signature verification failed: Bitcoin Core builder keys not found in keyring. "
+                "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
+            )
+        
+        # Check for signature verification failure
+        if result.returncode != 0 or not (has_good_signature and has_valid_signature):
+            self.logger.error(f"GPG signature verification failed: {result.stderr}")
+            raise RuntimeError(f"GPG signature verification failed: {result.stderr}")
+        
+        self.logger.info("GPG signature verification successful")
+        
+        # Verify SHA256 checksum
+        self.logger.info("Verifying SHA256 checksum")
+        result = subprocess.run(
+            ["sha256sum", "--check", "--ignore-missing", "SHA256SUMS"],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode != 0:
+            self.logger.error(f"SHA256 checksum verification failed: {result.stderr}")
+            raise RuntimeError(f"SHA256 checksum verification failed: {result.stderr}")
+        
+        # Check that the specific tarball was verified successfully
+        # sha256sum output format is: '<filename>: OK'
+        tarball_verified = False
+        for line in result.stdout.splitlines():
+            if line == f"{tarball}: OK":
+                tarball_verified = True
+                break
+        
+        if not tarball_verified:
+            self.logger.error(f"Tarball {tarball} checksum verification failed")
+            raise RuntimeError(f"Tarball {tarball} not verified in SHA256SUMS")
+        
+        self.logger.info("SHA256 checksum verification successful")
+        
+        # Extract the tarball
         self.logger.info("Extracting Bitcoin Core")
         result = subprocess.run(["tar", "-xzf", tarball], capture_output=True, text=True)
         
