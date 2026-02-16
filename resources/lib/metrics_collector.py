@@ -5,7 +5,6 @@ import os
 import subprocess
 import sys
 import threading
-import time
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -25,6 +24,7 @@ class MetricsCollector:
         self.collection_threads = {}
         self.stop_events = {}
         self.metrics_data = {}
+        self.metrics_lock = threading.Lock()
     
     def start_metrics_collection(self, node_name, datadir, bitcoin_cli_path, interval=10, rpcport=None):
         """Start collecting metrics for a Bitcoin Core node.
@@ -43,7 +43,8 @@ class MetricsCollector:
         self.logger.info(f"Starting metrics collection for {node_name} (interval: {interval}s)")
         
         # Initialize storage for this node
-        self.metrics_data[node_name] = []
+        with self.metrics_lock:
+            self.metrics_data[node_name] = []
         
         # Create stop event
         stop_event = threading.Event()
@@ -99,17 +100,20 @@ class MetricsCollector:
             node_name: Name identifier for the node
             output_file: Output file path
         """
-        if node_name not in self.metrics_data:
-            self.logger.warning(f"No metrics data found for {node_name}")
-            return
+        with self.metrics_lock:
+            if node_name not in self.metrics_data:
+                self.logger.warning(f"No metrics data found for {node_name}")
+                return
+            
+            metrics_snapshot = self.metrics_data[node_name].copy()
         
         output_path = Path(output_file)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         
         with open(output_path, 'w') as f:
-            json.dump(self.metrics_data[node_name], f, indent=2)
+            json.dump(metrics_snapshot, f, indent=2)
         
-        self.logger.info(f"Saved {len(self.metrics_data[node_name])} metrics snapshots for {node_name} to {output_file}")
+        self.logger.info(f"Saved {len(metrics_snapshot)} metrics snapshots for {node_name} to {output_file}")
     
     def get_metrics_summary(self, node_name):
         """Get a summary of collected metrics.
@@ -120,10 +124,12 @@ class MetricsCollector:
         Returns:
             Dictionary with metrics summary
         """
-        if node_name not in self.metrics_data:
-            return {}
+        with self.metrics_lock:
+            if node_name not in self.metrics_data:
+                return {}
+            
+            metrics = self.metrics_data[node_name].copy()
         
-        metrics = self.metrics_data[node_name]
         if not metrics:
             return {}
         
@@ -159,7 +165,8 @@ class MetricsCollector:
             try:
                 metrics = self._collect_node_metrics(node_name, datadir, bitcoin_cli_path, rpcport)
                 if metrics:
-                    self.metrics_data[node_name].append(metrics)
+                    with self.metrics_lock:
+                        self.metrics_data[node_name].append(metrics)
                     self.logger.debug(f"Collected metrics for {node_name}: blocks={metrics.get('blockchain_info', {}).get('blocks', 'N/A')}, peers={len(metrics.get('peer_info', []))}")
             except Exception as e:
                 self.logger.error(f"Error collecting metrics for {node_name}: {e}")
@@ -223,6 +230,6 @@ class MetricsCollector:
             else:
                 # Node might not be ready yet, don't log error
                 return None
-        except Exception as e:
+        except Exception:
             # Silently handle errors (node might not be ready)
             return None
