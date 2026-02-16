@@ -131,6 +131,14 @@ jobs:
         path: |
           results/**/*.log
     
+    - name: Upload metrics data
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: metrics-data
+        path: |
+          results/**/*_metrics.json
+    
     - name: Fail if tests failed
       if: steps.robot_test.outcome == 'failure'
       run: |

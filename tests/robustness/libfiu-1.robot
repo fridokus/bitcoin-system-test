@@ -2,6 +2,7 @@
 Documentation    Test Bitcoin Core robustness with libfiu fault injection
 Library          resources.lib.bitcoin_core.BitcoinCore
 Library          resources.lib.robustness.RobustnessLib
+Library          resources.lib.metrics_collector.MetricsCollector
 Resource         ../../resources/common.resource
 Resource         ../../resources/robustness.resource
 Suite Setup      Test Setup
@@ -14,6 +15,7 @@ ${GENERATOR_PORT}   18444
 ${VICTIM_PORT}      18445
 ${VICTIM_RPC_PORT}  18446
 ${WALLET_NAME}      miner
+${BITCOIN_CLI}      bitcoin-30.2/bin/bitcoin-cli
 
 *** Test Cases ***
 Test Libfiu Fault Injection On Bitcoin Node
@@ -23,6 +25,9 @@ Test Libfiu Fault Injection On Bitcoin Node
     Initialize Generator Node    ${GENERATOR_DIR}    ${GENERATOR_PORT}    ${WALLET_NAME}    150
     Verify Block Count    ${GENERATOR_DIR}    150
     
+    # Start metrics collection for generator node
+    Start Metrics Collection    generator    ${GENERATOR_DIR}    ${BITCOIN_CLI}    interval=10
+    
     # Start victim node with fault injection (uses retry logic)
     Start Victim Node With Retries    
     ...    ${VICTIM_DIR}
@@ -31,6 +36,9 @@ Test Libfiu Fault Injection On Bitcoin Node
     ...    127.0.0.1:${GENERATOR_PORT}
     ...    0.005
     Wait For Node To Start    ${VICTIM_DIR}    rpcport=${VICTIM_RPC_PORT}
+    
+    # Start metrics collection for victim node
+    Start Metrics Collection    victim    ${VICTIM_DIR}    ${BITCOIN_CLI}    interval=10    rpcport=${VICTIM_RPC_PORT}
     
     # Generate more blocks on generator
     Generate Blocks    ${GENERATOR_DIR}    ${WALLET_NAME}    10
@@ -81,6 +89,17 @@ Test Setup
 
 Test Teardown
     [Documentation]    Clean up test environment and save debug logs
+    
+    Log    Stopping metrics collection and saving data
+    Stop All Metrics Collection
+    Save Metrics To File    generator    ${OUTPUT_DIR}/generator_metrics.json
+    Save Metrics To File    victim    ${OUTPUT_DIR}/victim_metrics.json
+    
+    # Log metrics summary
+    ${generator_summary}=    Get Metrics Summary    generator
+    ${victim_summary}=    Get Metrics Summary    victim
+    Log    Generator metrics: ${generator_summary}
+    Log    Victim metrics: ${victim_summary}
     
     Log    Saving debug logs for analysis
     Copy Debug Log To    ${GENERATOR_DIR}    ${OUTPUT_DIR}/generator_debug.log

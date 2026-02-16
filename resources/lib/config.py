@@ -33,6 +33,10 @@ LOG_LEVEL_CONSOLE = "INFO"
 LOG_LEVEL_FILE = "DEBUG"
 DEBUG_LOG_TAIL_LINES = 50
 
+# Metrics collection settings
+METRICS_COLLECTION_INTERVAL = 10  # seconds
+METRICS_ENABLED = True
+
 # Directory settings
 DEFAULT_GENERATOR_DIR = "/tmp/node_generator"
 DEFAULT_VICTIM_DIR = "/tmp/node_victim"
