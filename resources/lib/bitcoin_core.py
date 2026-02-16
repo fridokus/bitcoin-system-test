@@ -87,6 +87,15 @@ class BitcoinCore:
         )
         
         if result.returncode != 0:
+            if result.returncode == 4:
+                self.logger.error(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
+                raise RuntimeError(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
             self.logger.error(f"Failed to download SHA256SUMS: {result.stderr}")
             raise RuntimeError(f"Failed to download SHA256SUMS: {result.stderr}")
         
@@ -99,6 +108,15 @@ class BitcoinCore:
         )
         
         if result.returncode != 0:
+            if result.returncode == 4:
+                self.logger.error(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
+                raise RuntimeError(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
             self.logger.error(f"Failed to download SHA256SUMS.asc: {result.stderr}")
             raise RuntimeError(f"Failed to download SHA256SUMS.asc: {result.stderr}")
         
@@ -124,25 +142,22 @@ class BitcoinCore:
             elif line.startswith("[GNUPG:] NO_PUBKEY"):
                 missing_key = True
         
-        if missing_key or (result.returncode != 0 and not has_good_signature):
-            # Check if it's a key issue
-            if missing_key:
-                self.logger.warning(
-                    "GPG signature verification failed: builder keys not imported. "
-                    "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
-                )
-                self.logger.warning(f"GPG output: {result.stderr}")
-                raise RuntimeError(
-                    "GPG signature verification failed: Bitcoin Core builder keys not found in keyring. "
-                    "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
-                )
-            else:
-                self.logger.error(f"GPG signature verification failed: {result.stderr}")
-                raise RuntimeError(f"GPG signature verification failed: {result.stderr}")
+        # Check for missing key first
+        if missing_key:
+            self.logger.warning(
+                "GPG signature verification failed: builder keys not imported. "
+                "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
+            )
+            self.logger.warning(f"GPG output: {result.stderr}")
+            raise RuntimeError(
+                "GPG signature verification failed: Bitcoin Core builder keys not found in keyring. "
+                "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
+            )
         
-        if not (has_good_signature and has_valid_signature):
-            self.logger.error(f"No valid signature found: {result.stderr}")
-            raise RuntimeError("No valid signature found in SHA256SUMS.asc")
+        # Check for signature verification failure
+        if result.returncode != 0 or not (has_good_signature and has_valid_signature):
+            self.logger.error(f"GPG signature verification failed: {result.stderr}")
+            raise RuntimeError(f"GPG signature verification failed: {result.stderr}")
         
         self.logger.info("GPG signature verification successful")
         
@@ -159,9 +174,10 @@ class BitcoinCore:
             raise RuntimeError(f"SHA256 checksum verification failed: {result.stderr}")
         
         # Check that the specific tarball was verified successfully
+        # sha256sum output format is: '<filename>: OK'
         tarball_verified = False
         for line in result.stdout.splitlines():
-            if tarball in line and "OK" in line:
+            if line == f"{tarball}: OK":
                 tarball_verified = True
                 break
         
