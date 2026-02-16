@@ -75,8 +75,8 @@ class RobustnessLib:
             return True  # Process doesn't exist or error reading PID
 
     @retry_on_error(max_retries=3, wait_time=5)
-    def _start_victim_node_with_retry(self, bitcoind_path, datadir, port, rpcport, connect, probability):
-        """Start victim node with libfiu and retry if it exits.
+    def _start_victim_node(self, bitcoind_path, datadir, port, rpcport, connect, probability):
+        """Start victim node with libfiu.
         
         This is wrapped with retry_on_error decorator to handle random failures.
         """
@@ -118,7 +118,7 @@ class RobustnessLib:
             connect: Address to connect to
             probability: Fault injection probability (default: 0.005)
         """
-        self._start_victim_node_with_retry(
+        self._start_victim_node(
             self.bitcoind, datadir, port, rpcport, connect, probability
         )
 
