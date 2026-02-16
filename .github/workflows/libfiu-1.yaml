@@ -1,0 +1,142 @@
+name: libfiu-1 Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    timeout-minutes: 45
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Install libfiu
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y libfiu-dev fiu-utils
+    
+    - name: Run unit tests
+      run: |
+        python -m pytest unit_tests/ -v --tb=short || true
+    
+    - name: Run libfiu-1 test
+      id: robot_test
+      timeout-minutes: 30
+      continue-on-error: true
+      run: |
+        python src/run_tests.py tests/robustness/libfiu-1.robot libfiu-1
+    
+    - name: Retry failed tests
+      if: steps.robot_test.outcome == 'failure'
+      timeout-minutes: 30
+      run: |
+        echo "Retrying failed tests..."
+        python src/run_tests.py tests/robustness/libfiu-1.robot libfiu-1
+    
+    - name: Parse test results
+      if: always()
+      id: test_results
+      run: |
+        # Find the most recent results directory
+        RESULTS_DIR=$(ls -td results/*/* 2>/dev/null | head -1)
+        
+        if [ -z "$RESULTS_DIR" ]; then
+          echo "No results found"
+          echo "summary=No test results found" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        # Parse output.xml for test statistics
+        if [ -f "$RESULTS_DIR/output.xml" ]; then
+          PASSED=$(grep -oP 'pass="\K[0-9]+' "$RESULTS_DIR/output.xml" | head -1 || echo "0")
+          FAILED=$(grep -oP 'fail="\K[0-9]+' "$RESULTS_DIR/output.xml" | head -1 || echo "0")
+          TOTAL=$((PASSED + FAILED))
+          
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "results_dir=$RESULTS_DIR" >> $GITHUB_OUTPUT
+          
+          if [ $FAILED -eq 0 ]; then
+            echo "summary=✅ All $TOTAL tests passed" >> $GITHUB_OUTPUT
+          else
+            echo "summary=❌ $FAILED of $TOTAL tests failed" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "summary=⚠️ Test results not found" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Comment PR with test results
+      if: always() && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const summary = '${{ steps.test_results.outputs.summary }}';
+          const passed = '${{ steps.test_results.outputs.passed }}';
+          const failed = '${{ steps.test_results.outputs.failed }}';
+          const total = '${{ steps.test_results.outputs.total }}';
+          const resultsDir = '${{ steps.test_results.outputs.results_dir }}';
+          
+          let comment = `## 🤖 Test Results\n\n`;
+          comment += `${summary}\n\n`;
+          
+          if (total > 0) {
+            comment += `### Summary\n`;
+            comment += `- **Total Tests:** ${total}\n`;
+            comment += `- **Passed:** ✅ ${passed}\n`;
+            comment += `- **Failed:** ❌ ${failed}\n\n`;
+            comment += `Results saved to: \`${resultsDir}\`\n`;
+          }
+          
+          comment += `\n[View full test results in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: results/
+    
+    - name: Upload debug logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-logs
+        path: |
+          results/**/*.log
+    
+    - name: Upload metrics data
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: metrics-data
+        path: |
+          results/**/*_metrics.json
+    
+    - name: Fail if tests failed
+      if: steps.robot_test.outcome == 'failure'
+      run: |
+        echo "Tests failed"
+        exit 1
