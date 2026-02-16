@@ -3,7 +3,6 @@ import sys
 import time
 
 from functools import wraps
-from typing import Any
 
 
 def retry_on_error(max_retries=2, wait_time=None):
@@ -40,6 +39,7 @@ def retry_on_error(max_retries=2, wait_time=None):
                         )
                         sys.__stdout__.flush()
             raise last_exception
-        return wrapper
-    return decorator
 
+        return wrapper
+
+    return decorator
