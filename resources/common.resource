@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation    High-level keywords for Bitcoin Core test scenarios
-Library          ../resources/lib/bitcoin_core.py
+Library          resources.lib.bitcoin_core.BitcoinCore
 
 *** Keywords ***
 Setup Bitcoin Environment
