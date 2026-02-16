@@ -33,8 +33,11 @@ jobs:
     - name: Run unit tests with coverage
       id: unit_tests
       run: |
+        set +e
         python -m pytest unit_tests/ -v --tb=short --cov=src --cov=resources/lib --cov-report=term --cov-report=html
-        echo "exit_code=$?" >> $GITHUB_OUTPUT
+        rc=$?
+        echo "exit_code=$rc" >> $GITHUB_OUTPUT
+        exit 0
     
     - name: Upload coverage report
       if: always()
