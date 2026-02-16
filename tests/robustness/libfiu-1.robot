@@ -54,8 +54,7 @@ Test Libfiu Fault Injection On Bitcoin Node
     Stop Bitcoin Node    ${VICTIM_DIR}
     Sleep    2s
     
-    # Restart victim with higher probability
-    Clean Node Directory    ${VICTIM_DIR}
+    # Restart victim with higher probability (testing recovery from existing state)
     Start Bitcoin Node With Fault Injection    
     ...    ${BITCOIN_BIN}
     ...    ${VICTIM_DIR}
@@ -65,11 +64,11 @@ Test Libfiu Fault Injection On Bitcoin Node
     ...    probability=0.01
     Wait For Node To Start    ${VICTIM_DIR}    rpcport=${VICTIM_RPC_PORT}
     
-    # Verify victim can sync after restart
+    # Verify victim can sync after restart with higher fault injection
     Sleep    5s    Wait for victim to sync after restart
     ${final_count}=    Get Block Count    ${VICTIM_DIR}    rpcport=${VICTIM_RPC_PORT}
     Log    Victim node synced to ${final_count} blocks after restart
-    Should Be True    ${final_count} > 0
+    Should Be Equal As Integers    ${final_count}    ${new_count}
 
 *** Keywords ***
 Test Setup

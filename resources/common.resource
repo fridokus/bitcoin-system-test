@@ -19,7 +19,7 @@ Download Bitcoin Core
     ${url}=    Set Variable    https://bitcoincore.org/bin/bitcoin-core-${version}/${tarball}
     
     Log    Downloading Bitcoin Core ${version}
-    Run Process    wget    -q    ${url}    shell=True
+    Run Process    wget    ${url}    shell=True
     Should Exist    ${tarball}
     
     Log    Extracting Bitcoin Core

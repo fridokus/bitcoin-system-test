@@ -1,0 +1,1924 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.1 (Python 3.12.3 on linux)" generated="2026-02-16T08:36:41.992457" rpa="false" schemaversion="5">
+<suite id="s1" name="Libfiu-1" source="/home/runner/work/bitcoin-system-test/bitcoin-system-test/tests/robustness/libfiu-1.robot">
+<kw name="Test Setup" type="SETUP">
+<kw name="Log" owner="BuiltIn">
+<arg>Setting up test environment</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.051577" elapsed="0.000183"/>
+</kw>
+<kw name="Install Libfiu" owner="robustness">
+<kw name="Log" owner="BuiltIn">
+<arg>Installing libfiu-dev and fiu-utils</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.052050" elapsed="0.000139"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>sudo</arg>
+<arg>apt-get</arg>
+<arg>update</arg>
+<arg>-qq</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.052276" elapsed="0.000163"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>sudo</arg>
+<arg>apt-get</arg>
+<arg>install</arg>
+<arg>-y</arg>
+<arg>libfiu-dev</arg>
+<arg>fiu-utils</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.052526" elapsed="0.000151"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.052759" elapsed="0.000146"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>libfiu installed successfully</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.052985" elapsed="0.000118"/>
+</kw>
+<doc>Install libfiu development package and utilities</doc>
+<status status="PASS" start="2026-02-16T08:36:42.051935" elapsed="0.001205"/>
+</kw>
+<kw name="Download Bitcoin Core" owner="common">
+<kw name="Set Variable" owner="BuiltIn">
+<var>${tarball}</var>
+<arg>bitcoin-${version}-x86_64-linux-gnu.tar.gz</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.053364" elapsed="0.000118"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${url}</var>
+<arg>https://bitcoincore.org/bin/bitcoin-core-${version}/${tarball}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.053557" elapsed="0.000108"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Downloading Bitcoin Core ${version}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.053737" elapsed="0.000131"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<arg>wget</arg>
+<arg>${url}</arg>
+<arg>shell=True</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.053941" elapsed="0.000123"/>
+</kw>
+<kw name="Should Exist" owner="OperatingSystem">
+<arg>${tarball}</arg>
+<doc>Fails unless the given path (file or directory) exists.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.054136" elapsed="0.000041"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Extracting Bitcoin Core</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.054245" elapsed="0.000115"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<arg>tar</arg>
+<arg>-xzf</arg>
+<arg>${tarball}</arg>
+<arg>shell=True</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.054429" elapsed="0.000128"/>
+</kw>
+<kw name="Should Exist" owner="OperatingSystem">
+<arg>${BITCOIN_DIR}</arg>
+<doc>Fails unless the given path (file or directory) exists.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.054630" elapsed="0.000041"/>
+</kw>
+<doc>Download and extract Bitcoin Core release</doc>
+<status status="PASS" start="2026-02-16T08:36:42.053265" elapsed="0.001436"/>
+</kw>
+<kw name="Clean Node Directory" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Cleaning directory ${datadir}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.054921" elapsed="0.000116"/>
+</kw>
+<kw name="Remove Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<arg>recursive=True</arg>
+<doc>Removes the directory pointed to by the given ``path``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.055107" elapsed="0.000056"/>
+</kw>
+<kw name="Create Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<doc>Creates the specified directory.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.055228" elapsed="0.000037"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<doc>Remove all files in a node directory</doc>
+<status status="PASS" start="2026-02-16T08:36:42.054815" elapsed="0.000478"/>
+</kw>
+<kw name="Clean Node Directory" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Cleaning directory ${datadir}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.055493" elapsed="0.000111"/>
+</kw>
+<kw name="Remove Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<arg>recursive=True</arg>
+<doc>Removes the directory pointed to by the given ``path``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.055672" elapsed="0.000053"/>
+</kw>
+<kw name="Create Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<doc>Creates the specified directory.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.055791" elapsed="0.000054"/>
+</kw>
+<arg>${VICTIM_DIR}</arg>
+<doc>Remove all files in a node directory</doc>
+<status status="PASS" start="2026-02-16T08:36:42.055385" elapsed="0.000490"/>
+</kw>
+<doc>Setup test environment</doc>
+<status status="PASS" start="2026-02-16T08:36:42.051120" elapsed="0.004780"/>
+</kw>
+<test id="s1-t1" name="Test Libfiu Fault Injection On Bitcoin Node" line="16">
+<kw name="Clean Node Directory" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Cleaning directory ${datadir}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.056477" elapsed="0.000130"/>
+</kw>
+<kw name="Remove Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<arg>recursive=True</arg>
+<doc>Removes the directory pointed to by the given ``path``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.056681" elapsed="0.000056"/>
+</kw>
+<kw name="Create Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<doc>Creates the specified directory.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.056825" elapsed="0.000045"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<doc>Remove all files in a node directory</doc>
+<status status="PASS" start="2026-02-16T08:36:42.056317" elapsed="0.000583"/>
+</kw>
+<kw name="Start Bitcoin Node" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Starting Bitcoin node with datadir=${datadir}, port=${port}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.057186" elapsed="0.000136"/>
+</kw>
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_BIN}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<arg>-port=${port}</arg>
+<arg>-bind=127.0.0.1</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.057395" elapsed="0.000158"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.057904" elapsed="0.000063"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.057646" elapsed="0.000348"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-connect=${connect}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.058330" elapsed="0.000169"/>
+</kw>
+<arg>'${connect}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-connect=${connect}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.058122" elapsed="0.000407"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-daemon</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.058823" elapsed="0.000052"/>
+</kw>
+<arg>${daemon}</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-daemon</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.058608" elapsed="0.000294"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.058974" elapsed="0.000091"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.059136" elapsed="0.000127"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>2s</arg>
+<arg>Wait for node to start</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.059334" elapsed="0.000164"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<arg>${GENERATOR_PORT}</arg>
+<arg>daemon=${True}</arg>
+<doc>Start a Bitcoin node in regtest mode</doc>
+<status status="PASS" start="2026-02-16T08:36:42.057013" elapsed="0.002520"/>
+</kw>
+<kw name="Wait For Node To Start" owner="common">
+<for flavor="IN RANGE">
+<iter>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.060415" elapsed="0.000144"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.060873" elapsed="0.000066"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.060644" elapsed="0.000323"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.061243" elapsed="0.000064"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.061044" elapsed="0.000290"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.061405" elapsed="0.000039"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.061603" elapsed="0.000046"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.061547" elapsed="0.000127"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.061483" elapsed="0.000214"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.061767" elapsed="0.000114"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.061955" elapsed="0.000110"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.062133" elapsed="0.000115"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.062287" elapsed="0.000017"/>
+</return>
+<arg>${datadir}</arg>
+<arg>getblockchaininfo</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.060242" elapsed="0.002093"/>
+</kw>
+<var>${status}</var>
+<arg>Execute Bitcoin CLI</arg>
+<arg>${datadir}</arg>
+<arg>getblockchaininfo</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.059960" elapsed="0.002400"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Return From Keyword" owner="BuiltIn">
+<doc>Returns from the enclosing user keyword.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.062628" elapsed="0.000109"/>
+</kw>
+<arg>${status}</arg>
+<arg>Return From Keyword</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.062437" elapsed="0.000323"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.062841" elapsed="0.000142"/>
+</kw>
+<var name="${i}"/>
+<status status="PASS" start="2026-02-16T08:36:42.059890" elapsed="0.003119"/>
+</iter>
+<var>${i}</var>
+<value>${timeout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.059789" elapsed="0.003243"/>
+</for>
+<kw name="Fail" owner="BuiltIn">
+<arg>Node did not start within ${timeout} seconds</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.063112" elapsed="0.000111"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<doc>Wait for node to be responsive</doc>
+<status status="PASS" start="2026-02-16T08:36:42.059664" elapsed="0.003591"/>
+</kw>
+<kw name="Create Wallet" owner="common">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.063752" elapsed="0.000160"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.064185" elapsed="0.000059"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.063997" elapsed="0.000272"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.064525" elapsed="0.000064"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.064343" elapsed="0.000271"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.064716" elapsed="0.000041"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.064917" elapsed="0.000045"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.064864" elapsed="0.000123"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.064812" elapsed="0.000194"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.065078" elapsed="0.000095"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.065245" elapsed="0.000107"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.065420" elapsed="0.000115"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.065572" elapsed="0.000013"/>
+</return>
+<var>${output}</var>
+<arg>${datadir}</arg>
+<arg>createwallet ${wallet_name}</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.063579" elapsed="0.002035"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Wallet created: ${output}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.065683" elapsed="0.000106"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<arg>miner</arg>
+<doc>Create a wallet</doc>
+<status status="PASS" start="2026-02-16T08:36:42.063353" elapsed="0.002484"/>
+</kw>
+<kw name="Generate Blocks" owner="common">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.066355" elapsed="0.000143"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.066773" elapsed="0.000076"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.066585" elapsed="0.000291"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.067134" elapsed="0.000056"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.066951" elapsed="0.000264"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.067282" elapsed="0.000038"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.067456" elapsed="0.000048"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.067405" elapsed="0.000124"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.067355" elapsed="0.000193"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.067612" elapsed="0.000088"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.067769" elapsed="0.000232"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.068077" elapsed="0.000122"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.068235" elapsed="0.000012"/>
+</return>
+<var>${address}</var>
+<arg>${datadir}</arg>
+<arg>getnewaddress</arg>
+<arg>rpcport=${rpcport}</arg>
+<arg>rpcwallet=${wallet_name}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.066167" elapsed="0.002107"/>
+</kw>
+<kw name="Strip String" owner="String">
+<var>${address}</var>
+<arg>${address}</arg>
+<doc>Remove leading and/or trailing whitespaces from the given string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.068345" elapsed="0.000041"/>
+</kw>
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.068709" elapsed="0.000158"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.069140" elapsed="0.000057"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.068949" elapsed="0.000273"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.069477" elapsed="0.000055"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.069297" elapsed="0.000260"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.069623" elapsed="0.000038"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.069814" elapsed="0.000048"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.069743" elapsed="0.000143"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.069696" elapsed="0.000209"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.069971" elapsed="0.000093"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.070168" elapsed="0.000110"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.070347" elapsed="0.000116"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.070497" elapsed="0.000012"/>
+</return>
+<var>${output}</var>
+<arg>${datadir}</arg>
+<arg>generatetoaddress ${count} ${address}</arg>
+<arg>rpcport=${rpcport}</arg>
+<arg>rpcwallet=${wallet_name}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.068524" elapsed="0.002011"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Generated ${count} blocks: ${output}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.070607" elapsed="0.000108"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<arg>miner</arg>
+<arg>150</arg>
+<doc>Generate blocks to an address</doc>
+<status status="PASS" start="2026-02-16T08:36:42.065944" elapsed="0.004811"/>
+</kw>
+<kw name="Get Block Count" owner="common">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.071250" elapsed="0.000145"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.071669" elapsed="0.000058"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.071484" elapsed="0.000269"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.072035" elapsed="0.000058"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.071848" elapsed="0.000271"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.072188" elapsed="0.000038"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.072360" elapsed="0.000045"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.072308" elapsed="0.000122"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.072261" elapsed="0.000187"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.072519" elapsed="0.000093"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.072701" elapsed="0.000127"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.072902" elapsed="0.000117"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.073054" elapsed="0.000011"/>
+</return>
+<var>${output}</var>
+<arg>${datadir}</arg>
+<arg>getblockcount</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.071089" elapsed="0.002002"/>
+</kw>
+<kw name="Strip String" owner="String">
+<var>${count}</var>
+<arg>${output}</arg>
+<doc>Remove leading and/or trailing whitespaces from the given string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.073162" elapsed="0.000039"/>
+</kw>
+<return>
+<value>${count}</value>
+<status status="PASS" start="2026-02-16T08:36:42.073230" elapsed="0.000011"/>
+</return>
+<var>${initial_count}</var>
+<arg>${GENERATOR_DIR}</arg>
+<doc>Get the current block count</doc>
+<status status="PASS" start="2026-02-16T08:36:42.070884" elapsed="0.002382"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Generator node has ${initial_count} blocks</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.073333" elapsed="0.000110"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${initial_count}</arg>
+<arg>150</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.073512" elapsed="0.000114"/>
+</kw>
+<kw name="Clean Node Directory" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Cleaning directory ${datadir}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.073884" elapsed="0.000115"/>
+</kw>
+<kw name="Remove Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<arg>recursive=True</arg>
+<doc>Removes the directory pointed to by the given ``path``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.074068" elapsed="0.000055"/>
+</kw>
+<kw name="Create Directory" owner="OperatingSystem">
+<arg>${datadir}</arg>
+<doc>Creates the specified directory.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.074189" elapsed="0.000037"/>
+</kw>
+<arg>${VICTIM_DIR}</arg>
+<doc>Remove all files in a node directory</doc>
+<status status="PASS" start="2026-02-16T08:36:42.073730" elapsed="0.000524"/>
+</kw>
+<kw name="Start Bitcoin Node With Fault Injection" owner="robustness">
+<kw name="Log" owner="BuiltIn">
+<arg>Starting Bitcoin node with fault injection (probability=${probability})</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.074562" elapsed="0.000126"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${fault_spec}</var>
+<arg>enable_random name=posix/io/*,probability=${probability}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.074762" elapsed="0.000139"/>
+</kw>
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>fiu-run</arg>
+<arg>-x</arg>
+<arg>-c</arg>
+<arg>${fault_spec}</arg>
+<arg>${bitcoind_path}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<arg>-port=${port}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<arg>-connect=${connect}</arg>
+<arg>-daemon</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.074972" elapsed="0.000195"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.075253" elapsed="0.000084"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.075407" elapsed="0.000109"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stderr}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.075585" elapsed="0.000102"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.075810" elapsed="0.000127"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>3s</arg>
+<arg>Wait for node to start with fault injection</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.076009" elapsed="0.000157"/>
+</kw>
+<arg>${BITCOIN_BIN}</arg>
+<arg>${VICTIM_DIR}</arg>
+<arg>${VICTIM_PORT}</arg>
+<arg>${VICTIM_RPC_PORT}</arg>
+<arg>127.0.0.1:${GENERATOR_PORT}</arg>
+<arg>probability=0.005</arg>
+<doc>Start a Bitcoin node with libfiu fault injection</doc>
+<status status="PASS" start="2026-02-16T08:36:42.074365" elapsed="0.001835"/>
+</kw>
+<kw name="Wait For Node To Start" owner="common">
+<for flavor="IN RANGE">
+<iter>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.077037" elapsed="0.000137"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.077444" elapsed="0.000057"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.077259" elapsed="0.000268"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.077784" elapsed="0.000076"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.077601" elapsed="0.000285"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.077956" elapsed="0.000038"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.078125" elapsed="0.000151"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.078074" elapsed="0.000230"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.078029" elapsed="0.000295"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.078393" elapsed="0.000090"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.078554" elapsed="0.000104"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.078726" elapsed="0.000132"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.078894" elapsed="0.000013"/>
+</return>
+<arg>${datadir}</arg>
+<arg>getblockchaininfo</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.076870" elapsed="0.002065"/>
+</kw>
+<var>${status}</var>
+<arg>Execute Bitcoin CLI</arg>
+<arg>${datadir}</arg>
+<arg>getblockchaininfo</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.076588" elapsed="0.002371"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Return From Keyword" owner="BuiltIn">
+<doc>Returns from the enclosing user keyword.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.079216" elapsed="0.000105"/>
+</kw>
+<arg>${status}</arg>
+<arg>Return From Keyword</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.079035" elapsed="0.000309"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.079407" elapsed="0.000127"/>
+</kw>
+<var name="${i}"/>
+<status status="PASS" start="2026-02-16T08:36:42.076524" elapsed="0.003035"/>
+</iter>
+<var>${i}</var>
+<value>${timeout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.076463" elapsed="0.003116"/>
+</for>
+<kw name="Fail" owner="BuiltIn">
+<arg>Node did not start within ${timeout} seconds</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.079646" elapsed="0.000108"/>
+</kw>
+<arg>${VICTIM_DIR}</arg>
+<arg>rpcport=${VICTIM_RPC_PORT}</arg>
+<doc>Wait for node to be responsive</doc>
+<status status="PASS" start="2026-02-16T08:36:42.076329" elapsed="0.003456"/>
+</kw>
+<kw name="Generate Blocks" owner="common">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.080305" elapsed="0.000139"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.080714" elapsed="0.000057"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.080526" elapsed="0.000286"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.081097" elapsed="0.000058"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.080894" elapsed="0.000287"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.081249" elapsed="0.000044"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.081442" elapsed="0.000046"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.081389" elapsed="0.000123"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.081336" elapsed="0.000196"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.081598" elapsed="0.000129"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.081819" elapsed="0.000114"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.082003" elapsed="0.000116"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.082154" elapsed="0.000012"/>
+</return>
+<var>${address}</var>
+<arg>${datadir}</arg>
+<arg>getnewaddress</arg>
+<arg>rpcport=${rpcport}</arg>
+<arg>rpcwallet=${wallet_name}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.080128" elapsed="0.002066"/>
+</kw>
+<kw name="Strip String" owner="String">
+<var>${address}</var>
+<arg>${address}</arg>
+<doc>Remove leading and/or trailing whitespaces from the given string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.082266" elapsed="0.000040"/>
+</kw>
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.082628" elapsed="0.000137"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.083059" elapsed="0.000058"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.082873" elapsed="0.000269"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.083391" elapsed="0.000065"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.083214" elapsed="0.000268"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.083549" elapsed="0.000037"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.083721" elapsed="0.000044"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.083666" elapsed="0.000123"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.083621" elapsed="0.000204"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.083893" elapsed="0.000089"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.084053" elapsed="0.000107"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.084228" elapsed="0.000116"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.084379" elapsed="0.000011"/>
+</return>
+<var>${output}</var>
+<arg>${datadir}</arg>
+<arg>generatetoaddress ${count} ${address}</arg>
+<arg>rpcport=${rpcport}</arg>
+<arg>rpcwallet=${wallet_name}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.082445" elapsed="0.001972"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Generated ${count} blocks: ${output}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.084489" elapsed="0.000105"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<arg>miner</arg>
+<arg>10</arg>
+<doc>Generate blocks to an address</doc>
+<status status="PASS" start="2026-02-16T08:36:42.079907" elapsed="0.004718"/>
+</kw>
+<kw name="Get Block Count" owner="common">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.085135" elapsed="0.000150"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.085549" elapsed="0.000058"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.085367" elapsed="0.000266"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.085906" elapsed="0.000057"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.085708" elapsed="0.000280"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.086056" elapsed="0.000037"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.086228" elapsed="0.000045"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.086172" elapsed="0.000125"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.086128" elapsed="0.000188"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.086386" elapsed="0.000087"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.086549" elapsed="0.000107"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.086725" elapsed="0.000132"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.086893" elapsed="0.000012"/>
+</return>
+<var>${output}</var>
+<arg>${datadir}</arg>
+<arg>getblockcount</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.084966" elapsed="0.001966"/>
+</kw>
+<kw name="Strip String" owner="String">
+<var>${count}</var>
+<arg>${output}</arg>
+<doc>Remove leading and/or trailing whitespaces from the given string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.087039" elapsed="0.000042"/>
+</kw>
+<return>
+<value>${count}</value>
+<status status="PASS" start="2026-02-16T08:36:42.087113" elapsed="0.000010"/>
+</return>
+<var>${new_count}</var>
+<arg>${GENERATOR_DIR}</arg>
+<doc>Get the current block count</doc>
+<status status="PASS" start="2026-02-16T08:36:42.084731" elapsed="0.002417"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Generator node now has ${new_count} blocks</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.087217" elapsed="0.000109"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${new_count}</arg>
+<arg>160</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.087395" elapsed="0.000113"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>5s</arg>
+<arg>Wait for victim to sync</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.087576" elapsed="0.000149"/>
+</kw>
+<kw name="Get Block Count" owner="common">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.088254" elapsed="0.000138"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.088672" elapsed="0.000058"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.088473" elapsed="0.000283"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.089031" elapsed="0.000161"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.088846" elapsed="0.000373"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.089289" elapsed="0.000038"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.089460" elapsed="0.000044"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.089408" elapsed="0.000120"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.089363" elapsed="0.000184"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.089611" elapsed="0.000087"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.089768" elapsed="0.000133"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.089972" elapsed="0.000114"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.090120" elapsed="0.000012"/>
+</return>
+<var>${output}</var>
+<arg>${datadir}</arg>
+<arg>getblockcount</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.088094" elapsed="0.002064"/>
+</kw>
+<kw name="Strip String" owner="String">
+<var>${count}</var>
+<arg>${output}</arg>
+<doc>Remove leading and/or trailing whitespaces from the given string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.090227" elapsed="0.000039"/>
+</kw>
+<return>
+<value>${count}</value>
+<status status="PASS" start="2026-02-16T08:36:42.090295" elapsed="0.000010"/>
+</return>
+<var>${victim_count}</var>
+<arg>${VICTIM_DIR}</arg>
+<arg>rpcport=${VICTIM_RPC_PORT}</arg>
+<doc>Get the current block count</doc>
+<status status="PASS" start="2026-02-16T08:36:42.087853" elapsed="0.002477"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Victim node has ${victim_count} blocks</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.090398" elapsed="0.000106"/>
+</kw>
+<kw name="Stop Bitcoin Node" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Stopping Bitcoin node with datadir=${datadir}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.090747" elapsed="0.000142"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${pid_file}</var>
+<arg>${datadir}/regtest/bitcoind.pid</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.090973" elapsed="0.000103"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<arg>${pid_file}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.091327" elapsed="0.000040"/>
+</kw>
+<var>${pid_exists}</var>
+<arg>File Should Exist</arg>
+<arg>${pid_file}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.091151" elapsed="0.000240"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Run Process" owner="Process">
+<arg>pkill</arg>
+<arg>-F</arg>
+<arg>${pid_file}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.091655" elapsed="0.000115"/>
+</kw>
+<arg>${pid_exists}</arg>
+<arg>Run Process</arg>
+<arg>pkill</arg>
+<arg>-F</arg>
+<arg>${pid_file}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.091463" elapsed="0.000351"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<arg>Wait for node to stop</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.091886" elapsed="0.000143"/>
+</kw>
+<arg>${VICTIM_DIR}</arg>
+<doc>Stop a Bitcoin node</doc>
+<status status="PASS" start="2026-02-16T08:36:42.090613" elapsed="0.001449"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>2s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.092126" elapsed="0.000123"/>
+</kw>
+<kw name="Start Bitcoin Node With Fault Injection" owner="robustness">
+<kw name="Log" owner="BuiltIn">
+<arg>Starting Bitcoin node with fault injection (probability=${probability})</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.092561" elapsed="0.000131"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${fault_spec}</var>
+<arg>enable_random name=posix/io/*,probability=${probability}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.092764" elapsed="0.000149"/>
+</kw>
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>fiu-run</arg>
+<arg>-x</arg>
+<arg>-c</arg>
+<arg>${fault_spec}</arg>
+<arg>${bitcoind_path}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<arg>-port=${port}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<arg>-connect=${connect}</arg>
+<arg>-daemon</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.093016" elapsed="0.000200"/>
+</kw>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.093302" elapsed="0.000089"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.093463" elapsed="0.000105"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stderr}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.093637" elapsed="0.000102"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.093840" elapsed="0.000131"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>3s</arg>
+<arg>Wait for node to start with fault injection</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.094042" elapsed="0.000144"/>
+</kw>
+<arg>${BITCOIN_BIN}</arg>
+<arg>${VICTIM_DIR}</arg>
+<arg>${VICTIM_PORT}</arg>
+<arg>${VICTIM_RPC_PORT}</arg>
+<arg>127.0.0.1:${GENERATOR_PORT}</arg>
+<arg>probability=0.01</arg>
+<doc>Start a Bitcoin node with libfiu fault injection</doc>
+<status status="PASS" start="2026-02-16T08:36:42.092371" elapsed="0.001849"/>
+</kw>
+<kw name="Wait For Node To Start" owner="common">
+<for flavor="IN RANGE">
+<iter>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.095057" elapsed="0.000138"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.095466" elapsed="0.000059"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.095281" elapsed="0.000270"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.095826" elapsed="0.000065"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.095624" elapsed="0.000293"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.095984" elapsed="0.000039"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.096155" elapsed="0.000045"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.096104" elapsed="0.000120"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.096058" elapsed="0.000186"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.096313" elapsed="0.000089"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.096473" elapsed="0.000106"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.096646" elapsed="0.000132"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.096832" elapsed="0.000013"/>
+</return>
+<arg>${datadir}</arg>
+<arg>getblockchaininfo</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.094890" elapsed="0.001983"/>
+</kw>
+<var>${status}</var>
+<arg>Execute Bitcoin CLI</arg>
+<arg>${datadir}</arg>
+<arg>getblockchaininfo</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.094594" elapsed="0.002303"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Return From Keyword" owner="BuiltIn">
+<doc>Returns from the enclosing user keyword.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.097160" elapsed="0.000104"/>
+</kw>
+<arg>${status}</arg>
+<arg>Return From Keyword</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.096974" elapsed="0.000313"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.097349" elapsed="0.000131"/>
+</kw>
+<var name="${i}"/>
+<status status="PASS" start="2026-02-16T08:36:42.094534" elapsed="0.002971"/>
+</iter>
+<var>${i}</var>
+<value>${timeout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.094479" elapsed="0.003047"/>
+</for>
+<kw name="Fail" owner="BuiltIn">
+<arg>Node did not start within ${timeout} seconds</arg>
+<doc>Fails the test with the given message and optionally alters its tags.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.097592" elapsed="0.000109"/>
+</kw>
+<arg>${VICTIM_DIR}</arg>
+<arg>rpcport=${VICTIM_RPC_PORT}</arg>
+<doc>Wait for node to be responsive</doc>
+<status status="PASS" start="2026-02-16T08:36:42.094348" elapsed="0.003383"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>5s</arg>
+<arg>Wait for victim to sync after restart</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.097815" elapsed="0.000147"/>
+</kw>
+<kw name="Get Block Count" owner="common">
+<kw name="Execute Bitcoin CLI" owner="common">
+<kw name="Create List" owner="BuiltIn">
+<var>${cmd}</var>
+<arg>${BITCOIN_CLI}</arg>
+<arg>-regtest</arg>
+<arg>-datadir=${datadir}</arg>
+<doc>Returns a list containing given items.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.098491" elapsed="0.000140"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.098925" elapsed="0.000060"/>
+</kw>
+<arg>'${rpcport}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcport=${rpcport}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.098717" elapsed="0.000294"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.099272" elapsed="0.000099"/>
+</kw>
+<arg>'${rpcwallet}' != '${EMPTY}'</arg>
+<arg>Append To List</arg>
+<arg>${cmd}</arg>
+<arg>-rpcwallet=${rpcwallet}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.099085" elapsed="0.000315"/>
+</kw>
+<kw name="Split String" owner="String">
+<var>@{command_parts}</var>
+<arg>${command}</arg>
+<doc>Splits the ``string`` using ``separator`` as a delimiter string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.099469" elapsed="0.000038"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Append To List" owner="Collections">
+<arg>${cmd}</arg>
+<arg>${part}</arg>
+<doc>Adds ``values`` to the end of ``list``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.099641" elapsed="0.000045"/>
+</kw>
+<var name="${part}"/>
+<status status="PASS" start="2026-02-16T08:36:42.099590" elapsed="0.000122"/>
+</iter>
+<var>${part}</var>
+<value>@{command_parts}</value>
+<status status="PASS" start="2026-02-16T08:36:42.099543" elapsed="0.000188"/>
+</for>
+<kw name="Run Process" owner="Process">
+<var>${result}</var>
+<arg>@{cmd}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.099813" elapsed="0.000095"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>${result.stdout}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.099980" elapsed="0.000106"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${result.rc}</arg>
+<arg>0</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.100156" elapsed="0.000113"/>
+</kw>
+<return>
+<value>${result.stdout}</value>
+<status status="PASS" start="2026-02-16T08:36:42.100304" elapsed="0.000012"/>
+</return>
+<var>${output}</var>
+<arg>${datadir}</arg>
+<arg>getblockcount</arg>
+<arg>rpcport=${rpcport}</arg>
+<doc>Execute bitcoin-cli command</doc>
+<status status="PASS" start="2026-02-16T08:36:42.098323" elapsed="0.002020"/>
+</kw>
+<kw name="Strip String" owner="String">
+<var>${count}</var>
+<arg>${output}</arg>
+<doc>Remove leading and/or trailing whitespaces from the given string.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.100412" elapsed="0.000040"/>
+</kw>
+<return>
+<value>${count}</value>
+<status status="PASS" start="2026-02-16T08:36:42.100482" elapsed="0.000010"/>
+</return>
+<var>${final_count}</var>
+<arg>${VICTIM_DIR}</arg>
+<arg>rpcport=${VICTIM_RPC_PORT}</arg>
+<doc>Get the current block count</doc>
+<status status="PASS" start="2026-02-16T08:36:42.098084" elapsed="0.002431"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Victim node synced to ${final_count} blocks after restart</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.100582" elapsed="0.000107"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${final_count}</arg>
+<arg>${new_count}</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.100757" elapsed="0.000131"/>
+</kw>
+<doc>Test that a Bitcoin node can handle I/O faults injected by libfiu</doc>
+<status status="PASS" start="2026-02-16T08:36:42.055945" elapsed="0.045036"/>
+</test>
+<kw name="Test Teardown" type="TEARDOWN">
+<kw name="Log" owner="BuiltIn">
+<arg>Cleaning up test environment</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.101684" elapsed="0.000140"/>
+</kw>
+<kw name="Stop Bitcoin Node" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Stopping Bitcoin node with datadir=${datadir}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.102035" elapsed="0.000122"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${pid_file}</var>
+<arg>${datadir}/regtest/bitcoind.pid</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.102228" elapsed="0.000106"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<arg>${pid_file}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.102588" elapsed="0.000040"/>
+</kw>
+<var>${pid_exists}</var>
+<arg>File Should Exist</arg>
+<arg>${pid_file}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.102417" elapsed="0.000235"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Run Process" owner="Process">
+<arg>pkill</arg>
+<arg>-F</arg>
+<arg>${pid_file}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.102938" elapsed="0.000124"/>
+</kw>
+<arg>${pid_exists}</arg>
+<arg>Run Process</arg>
+<arg>pkill</arg>
+<arg>-F</arg>
+<arg>${pid_file}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.102723" elapsed="0.000368"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<arg>Wait for node to stop</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.103157" elapsed="0.000143"/>
+</kw>
+<arg>${GENERATOR_DIR}</arg>
+<doc>Stop a Bitcoin node</doc>
+<status status="PASS" start="2026-02-16T08:36:42.101938" elapsed="0.001396"/>
+</kw>
+<kw name="Stop Bitcoin Node" owner="common">
+<kw name="Log" owner="BuiltIn">
+<arg>Stopping Bitcoin node with datadir=${datadir}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.103533" elapsed="0.000120"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<var>${pid_file}</var>
+<arg>${datadir}/regtest/bitcoind.pid</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.103724" elapsed="0.000134"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="File Should Exist" owner="OperatingSystem">
+<arg>${pid_file}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.104116" elapsed="0.000040"/>
+</kw>
+<var>${pid_exists}</var>
+<arg>File Should Exist</arg>
+<arg>${pid_file}</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.103940" elapsed="0.000239"/>
+</kw>
+<kw name="Run Keyword If" owner="BuiltIn">
+<kw name="Run Process" owner="Process">
+<arg>pkill</arg>
+<arg>-F</arg>
+<arg>${pid_file}</arg>
+<doc>Runs a process and waits for it to complete.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.104443" elapsed="0.000116"/>
+</kw>
+<arg>${pid_exists}</arg>
+<arg>Run Process</arg>
+<arg>pkill</arg>
+<arg>-F</arg>
+<arg>${pid_file}</arg>
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<status status="PASS" start="2026-02-16T08:36:42.104250" elapsed="0.000337"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1s</arg>
+<arg>Wait for node to stop</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.104654" elapsed="0.000156"/>
+</kw>
+<arg>${VICTIM_DIR}</arg>
+<doc>Stop a Bitcoin node</doc>
+<status status="PASS" start="2026-02-16T08:36:42.103439" elapsed="0.001407"/>
+</kw>
+<kw name="Remove Directory" owner="OperatingSystem">
+<arg>${GENERATOR_DIR}</arg>
+<arg>recursive=True</arg>
+<doc>Removes the directory pointed to by the given ``path``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.104911" elapsed="0.000060"/>
+</kw>
+<kw name="Remove Directory" owner="OperatingSystem">
+<arg>${VICTIM_DIR}</arg>
+<arg>recursive=True</arg>
+<doc>Removes the directory pointed to by the given ``path``.</doc>
+<status status="NOT RUN" start="2026-02-16T08:36:42.105037" elapsed="0.000051"/>
+</kw>
+<doc>Clean up test environment</doc>
+<status status="PASS" start="2026-02-16T08:36:42.101453" elapsed="0.003697"/>
+</kw>
+<doc>Test Bitcoin Core robustness with libfiu fault injection</doc>
+<status status="PASS" start="2026-02-16T08:36:41.993258" elapsed="0.111916"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Libfiu-1" id="s1" pass="1" fail="0" skip="0">Libfiu-1</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2026-02-16T08:36:42.022766" level="WARN">Error in file '/home/runner/work/bitcoin-system-test/bitcoin-system-test/resources/common.resource' on line 81: The '[Return]' setting is deprecated. Use the 'RETURN' statement instead.</msg>
+<msg time="2026-02-16T08:36:42.023153" level="WARN">Error in file '/home/runner/work/bitcoin-system-test/bitcoin-system-test/resources/common.resource' on line 106: The '[Return]' setting is deprecated. Use the 'RETURN' statement instead.</msg>
+</errors>
+</robot>

@@ -21,11 +21,10 @@ Start Bitcoin Node With Fault Injection
     
     ${fault_spec}=    Set Variable    enable_random name=posix/io/*,probability=${probability}
     
-    ${cmd}=    Catenate    SEPARATOR=    
-    ...    fiu-run -x -c "${fault_spec}" 
-    ...    ${bitcoind_path} -regtest -datadir=${datadir} -port=${port} -rpcport=${rpcport} -connect=${connect} -daemon
+    ${cmd}=    Create List    fiu-run    -x    -c    ${fault_spec}
+    ...    ${bitcoind_path}    -regtest    -datadir=${datadir}    -port=${port}    -rpcport=${rpcport}    -connect=${connect}    -daemon
     
-    ${result}=    Run Process    ${cmd}    shell=True
+    ${result}=    Run Process    @{cmd}
     Log    ${result.stdout}
     Log    ${result.stderr}
     Should Be Equal As Integers    ${result.rc}    0
