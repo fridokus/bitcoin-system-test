@@ -62,11 +62,11 @@ class BitcoinCore:
         )
         
         if result.returncode != 0:
-            # Check if it's a timeout error
-            if "timeout" in result.stderr.lower():
+            # Check if it's a timeout error (wget exit code 4)
+            if result.returncode == 4:
                 self.logger.error(
                     f"Download timeout after {timeout} seconds. "
-                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config if needed."
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
                 )
                 raise RuntimeError(
                     f"Download timeout after {timeout} seconds. "
@@ -126,7 +126,7 @@ class BitcoinCore:
         
         if missing_key or (result.returncode != 0 and not has_good_signature):
             # Check if it's a key issue
-            if missing_key or "no public key" in result.stderr.lower():
+            if missing_key:
                 self.logger.warning(
                     "GPG signature verification failed: builder keys not imported. "
                     "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
