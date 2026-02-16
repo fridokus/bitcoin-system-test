@@ -62,6 +62,16 @@ class BitcoinCore:
         )
         
         if result.returncode != 0:
+            # Check if it's a timeout error
+            if "timeout" in result.stderr.lower():
+                self.logger.error(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config if needed."
+                )
+                raise RuntimeError(
+                    f"Download timeout after {timeout} seconds. "
+                    f"Adjust BITCOIN_DOWNLOAD_TIMEOUT in config.ini if needed."
+                )
             self.logger.error(f"Failed to download Bitcoin Core: {result.stderr}")
             raise RuntimeError(f"Failed to download Bitcoin Core: {result.stderr}")
         
@@ -95,19 +105,28 @@ class BitcoinCore:
         # Verify GPG signature
         self.logger.info("Verifying GPG signature of SHA256SUMS")
         result = subprocess.run(
-            ["gpg", "--verify", "SHA256SUMS.asc", "SHA256SUMS"],
+            ["gpg", "--status-fd", "1", "--verify", "SHA256SUMS.asc", "SHA256SUMS"],
             capture_output=True,
             text=True
         )
         
-        # Check for good signature
-        # GPG writes signature status to stderr
-        stderr_lower = result.stderr.lower()
-        has_good_signature = "good signature" in stderr_lower
+        # Parse GPG status output for reliable verification
+        # --status-fd outputs machine-readable status lines
+        has_good_signature = False
+        has_valid_signature = False
+        missing_key = False
         
-        if result.returncode != 0:
-            # Check if it's a key issue vs signature issue
-            if "no public key" in stderr_lower or "can't check signature" in stderr_lower:
+        for line in result.stdout.splitlines():
+            if line.startswith("[GNUPG:] GOODSIG"):
+                has_good_signature = True
+            elif line.startswith("[GNUPG:] VALIDSIG"):
+                has_valid_signature = True
+            elif line.startswith("[GNUPG:] NO_PUBKEY"):
+                missing_key = True
+        
+        if missing_key or (result.returncode != 0 and not has_good_signature):
+            # Check if it's a key issue
+            if missing_key or "no public key" in result.stderr.lower():
                 self.logger.warning(
                     "GPG signature verification failed: builder keys not imported. "
                     "Import keys from https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys"
@@ -121,7 +140,7 @@ class BitcoinCore:
                 self.logger.error(f"GPG signature verification failed: {result.stderr}")
                 raise RuntimeError(f"GPG signature verification failed: {result.stderr}")
         
-        if not has_good_signature:
+        if not (has_good_signature and has_valid_signature):
             self.logger.error(f"No valid signature found: {result.stderr}")
             raise RuntimeError("No valid signature found in SHA256SUMS.asc")
         
@@ -139,7 +158,14 @@ class BitcoinCore:
             self.logger.error(f"SHA256 checksum verification failed: {result.stderr}")
             raise RuntimeError(f"SHA256 checksum verification failed: {result.stderr}")
         
-        if tarball not in result.stdout or "OK" not in result.stdout:
+        # Check that the specific tarball was verified successfully
+        tarball_verified = False
+        for line in result.stdout.splitlines():
+            if tarball in line and "OK" in line:
+                tarball_verified = True
+                break
+        
+        if not tarball_verified:
             self.logger.error(f"Tarball {tarball} checksum verification failed")
             raise RuntimeError(f"Tarball {tarball} not verified in SHA256SUMS")
         
