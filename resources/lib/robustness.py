@@ -6,9 +6,11 @@ import sys
 import time
 from pathlib import Path
 
-# Add src to path to import decorators
+# Import config and logging
+from . import config
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 from util.decorators import retry_on_error
+from util.logger import get_logger
 
 
 class RobustnessLib:
@@ -16,20 +18,21 @@ class RobustnessLib:
     
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
-    def __init__(self, bitcoin_version="30.2"):
+    def __init__(self, bitcoin_version=None):
         """Initialize RobustnessLib.
         
         Args:
-            bitcoin_version: Version of Bitcoin Core to use (default: 30.2)
+            bitcoin_version: Version of Bitcoin Core to use (default: from config)
         """
-        self.bitcoin_version = bitcoin_version
-        self.bitcoin_dir = f"bitcoin-{bitcoin_version}"
+        self.bitcoin_version = bitcoin_version or config.BITCOIN_VERSION
+        self.bitcoin_dir = f"bitcoin-{self.bitcoin_version}"
         self.bitcoind = f"{self.bitcoin_dir}/bin/bitcoind"
         self.bitcoin_cli = f"{self.bitcoin_dir}/bin/bitcoin-cli"
+        self.logger = get_logger('robustness')
 
     def install_libfiu(self):
         """Install libfiu development package and utilities."""
-        print("Installing libfiu-dev and fiu-utils")
+        self.logger.info("Installing libfiu-dev and fiu-utils")
         
         # Update package list
         result = subprocess.run(
@@ -46,9 +49,10 @@ class RobustnessLib:
         )
         
         if result.returncode != 0:
+            self.logger.error(f"Failed to install libfiu: {result.stderr}")
             raise RuntimeError(f"Failed to install libfiu: {result.stderr}")
         
-        print("libfiu installed successfully")
+        self.logger.info("libfiu installed successfully")
 
     def _check_node_exited(self, datadir):
         """Check if node has exited by checking PID file and process.
@@ -74,13 +78,13 @@ class RobustnessLib:
         except (OSError, ValueError):
             return True  # Process doesn't exist or error reading PID
 
-    @retry_on_error(max_retries=3, wait_time=5)
+    @retry_on_error(max_retries=config.FAULT_INJECTION_RETRY_MAX, wait_time=config.FAULT_INJECTION_RETRY_WAIT)
     def _start_victim_node(self, bitcoind_path, datadir, port, rpcport, connect, probability):
         """Start victim node with libfiu.
         
         This is wrapped with retry_on_error decorator to handle random failures.
         """
-        print(f"Starting victim node with fault injection (probability={probability})")
+        self.logger.info(f"Starting victim node with fault injection (probability={probability})")
         
         fault_spec = f"enable_random name=posix/io/*,probability={probability}"
         
@@ -94,6 +98,7 @@ class RobustnessLib:
         result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode != 0:
+            self.logger.error(f"Failed to start victim node: {result.stderr}")
             raise RuntimeError(f"Failed to start victim node: {result.stderr}")
         
         # Give it a moment to start
@@ -101,9 +106,10 @@ class RobustnessLib:
         
         # Check if node is actually running after start
         if self._check_node_exited(datadir):
+            self.logger.warning("Victim node exited shortly after start (likely due to fault injection)")
             raise RuntimeError("Victim node exited shortly after start (likely due to fault injection)")
         
-        print("Victim node started successfully")
+        self.logger.info("Victim node started successfully")
 
     def start_victim_node_with_fault_injection(self, datadir, port, rpcport, connect, probability=0.005):
         """Start a victim node with libfiu fault injection and retry on failure.

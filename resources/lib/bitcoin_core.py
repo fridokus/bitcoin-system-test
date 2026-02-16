@@ -6,22 +6,28 @@ import sys
 import time
 from pathlib import Path
 
+# Import config and logging
+from . import config
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+from util.logger import get_logger
+
 
 class BitcoinCore:
     """Library for managing Bitcoin Core nodes."""
     
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
-    def __init__(self, bitcoin_version="30.2"):
+    def __init__(self, bitcoin_version=None):
         """Initialize BitcoinCore library.
         
         Args:
-            bitcoin_version: Version of Bitcoin Core to use (default: 30.2)
+            bitcoin_version: Version of Bitcoin Core to use (default: from config)
         """
-        self.bitcoin_version = bitcoin_version
-        self.bitcoin_dir = f"bitcoin-{bitcoin_version}"
+        self.bitcoin_version = bitcoin_version or config.BITCOIN_VERSION
+        self.bitcoin_dir = f"bitcoin-{self.bitcoin_version}"
         self.bitcoind = f"{self.bitcoin_dir}/bin/bitcoind"
         self.bitcoin_cli = f"{self.bitcoin_dir}/bin/bitcoin-cli"
+        self.logger = get_logger('bitcoin_core')
 
     def download_bitcoin_core(self, version=None):
         """Download and extract Bitcoin Core release.
@@ -35,19 +41,21 @@ class BitcoinCore:
         tarball = f"bitcoin-{version}-x86_64-linux-gnu.tar.gz"
         url = f"https://bitcoincore.org/bin/bitcoin-core-{version}/{tarball}"
         
-        print(f"Downloading Bitcoin Core {version}")
+        self.logger.info(f"Downloading Bitcoin Core {version}")
         result = subprocess.run(["wget", url], capture_output=True, text=True)
         
         if result.returncode != 0:
+            self.logger.error(f"Failed to download Bitcoin Core: {result.stderr}")
             raise RuntimeError(f"Failed to download Bitcoin Core: {result.stderr}")
         
         if not os.path.exists(tarball):
             raise RuntimeError(f"Download file {tarball} not found")
         
-        print("Extracting Bitcoin Core")
+        self.logger.info("Extracting Bitcoin Core")
         result = subprocess.run(["tar", "-xzf", tarball], capture_output=True, text=True)
         
         if result.returncode != 0:
+            self.logger.error(f"Failed to extract Bitcoin Core: {result.stderr}")
             raise RuntimeError(f"Failed to extract Bitcoin Core: {result.stderr}")
         
         if not os.path.exists(self.bitcoin_dir):
@@ -63,7 +71,7 @@ class BitcoinCore:
             connect: Address to connect to (optional)
             daemon: Run as daemon (default: True)
         """
-        print(f"Starting Bitcoin node with datadir={datadir}, port={port}")
+        self.logger.info(f"Starting Bitcoin node with datadir={datadir}, port={port}")
         
         cmd = [self.bitcoind, "-regtest", f"-datadir={datadir}", f"-port={port}", "-bind=127.0.0.1"]
         
@@ -77,9 +85,11 @@ class BitcoinCore:
         result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode != 0:
+            self.logger.error(f"Failed to start Bitcoin node: {result.stderr}")
             raise RuntimeError(f"Failed to start Bitcoin node: {result.stderr}")
         
         time.sleep(2)  # Wait for node to start
+        self.logger.debug(f"Bitcoin node started successfully")
 
     def stop_bitcoin_node(self, datadir):
         """Stop a Bitcoin node.
