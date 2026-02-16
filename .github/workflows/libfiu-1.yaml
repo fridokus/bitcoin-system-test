@@ -34,8 +34,7 @@ jobs:
     
     - name: Run libfiu-1 test
       run: |
-        mkdir -p results
-        robot --outputdir results tests/robustness/libfiu-1.robot
+        python src/run_tests.py tests/robustness/libfiu-1.robot libfiu-1
     
     - name: Upload test results
       if: always()
@@ -50,4 +49,4 @@ jobs:
       with:
         name: debug-logs
         path: |
-          results/*.log
+          results/**/*.log

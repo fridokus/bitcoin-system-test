@@ -48,8 +48,8 @@ Test Libfiu Fault Injection On Bitcoin Node
     Stop Bitcoin Node    ${VICTIM_DIR}
     Sleep    2s
     
-    # Save debug logs from first run
-    Copy Debug Log To    ${VICTIM_DIR}    results/victim_debug_first_run.log
+    # Save debug logs from first run (Robot Framework sets OUTPUT_DIR)
+    Copy Debug Log To    ${VICTIM_DIR}    ${OUTPUT_DIR}/victim_debug_first_run.log
     
     # Restart victim with higher probability (testing recovery from existing state)
     Start Victim Node With Retries
@@ -73,6 +73,8 @@ Test Setup
     [Documentation]    Setup test environment
     
     Log    Setting up test environment
+    Log    Results will be saved to: ${OUTPUT_DIR}
+    
     Setup Fault Injection Environment
     Setup Bitcoin Environment
     Setup Test Nodes    ${GENERATOR_DIR}    ${VICTIM_DIR}
@@ -81,8 +83,8 @@ Test Teardown
     [Documentation]    Clean up test environment and save debug logs
     
     Log    Saving debug logs for analysis
-    Copy Debug Log To    ${GENERATOR_DIR}    results/generator_debug.log
-    Copy Debug Log To    ${VICTIM_DIR}    results/victim_debug_final.log
+    Copy Debug Log To    ${GENERATOR_DIR}    ${OUTPUT_DIR}/generator_debug.log
+    Copy Debug Log To    ${VICTIM_DIR}    ${OUTPUT_DIR}/victim_debug_final.log
     
     Log    Cleaning up test environment
     Stop Bitcoin Node    ${GENERATOR_DIR}
