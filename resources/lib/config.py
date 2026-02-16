@@ -7,22 +7,33 @@ from pathlib import Path
 
 def _get_config_path():
     """Get the path to the config.ini file."""
-    # Look for config.ini in the repository root
+    # Allow override via environment variable
+    env_config_path = os.environ.get("BITCOIN_TEST_CONFIG")
+    if env_config_path:
+        config_path = Path(env_config_path)
+        if config_path.exists():
+            return config_path
+        raise FileNotFoundError(f"Config file specified in BITCOIN_TEST_CONFIG not found: {env_config_path}")
+    
+    # Search up the directory tree for config.ini
     current_dir = Path(__file__).resolve().parent
-    repo_root = current_dir.parent.parent
-    config_path = repo_root / "config.ini"
+    for parent in [current_dir] + list(current_dir.parents):
+        config_path = parent / "config.ini"
+        if config_path.exists():
+            return config_path
     
-    if not config_path.exists():
-        raise FileNotFoundError(f"config.ini not found at {config_path}")
-    
-    return config_path
+    raise FileNotFoundError("config.ini not found in repository. Please ensure it exists in the repository root.")
 
 
 def _load_config():
     """Load configuration from config.ini file."""
     config = configparser.ConfigParser()
     config_path = _get_config_path()
-    config.read(config_path)
+    
+    files_read = config.read(config_path)
+    if not files_read:
+        raise RuntimeError(f"Failed to read configuration from {config_path}. Check file permissions and syntax.")
+    
     return config
 
 
