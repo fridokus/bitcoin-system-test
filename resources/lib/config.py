@@ -30,9 +30,16 @@ def _load_config():
     config = configparser.ConfigParser()
     config_path = _get_config_path()
     
-    files_read = config.read(config_path)
-    if not files_read:
-        raise RuntimeError(f"Failed to read configuration from {config_path}. Check file permissions and syntax.")
+    # Check if file is readable
+    if not os.access(config_path, os.R_OK):
+        raise PermissionError(f"Cannot read configuration file {config_path}. Check file permissions.")
+    
+    try:
+        files_read = config.read(config_path)
+        if not files_read:
+            raise RuntimeError(f"Failed to read configuration from {config_path}.")
+    except configparser.Error as e:
+        raise ValueError(f"Invalid INI syntax in {config_path}: {e}")
     
     return config
 
