@@ -1,10 +1,6 @@
 name: libfiu-1 Test
 
 on:
-  push:
-    branches: [ main, copilot/** ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
