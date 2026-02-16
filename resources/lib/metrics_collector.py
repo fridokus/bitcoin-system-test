@@ -75,10 +75,21 @@ class MetricsCollector:
         # Signal the thread to stop
         self.stop_events[node_name].set()
         
-        # Wait for thread to finish
-        self.collection_threads[node_name].join(timeout=5)
+        # Wait for thread to finish; use a timeout that is at least as long as
+        # the maximum time a metrics collection RPC can block.
+        thread = self.collection_threads[node_name]
+        thread.join(timeout=10)
         
-        # Cleanup
+        if thread.is_alive():
+            # The thread is still running; avoid deleting bookkeeping so that
+            # its state remains visible and it can be stopped/inspected later.
+            self.logger.warning(
+                f"Metrics collection thread for {node_name} did not stop within the timeout; "
+                "it may still be running."
+            )
+            return
+        
+        # Cleanup only after the thread has terminated
         del self.collection_threads[node_name]
         del self.stop_events[node_name]
         
