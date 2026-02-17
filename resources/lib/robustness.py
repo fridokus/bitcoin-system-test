@@ -7,8 +7,9 @@ import time
 from pathlib import Path
 
 # Import config and logging
-from . import config
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.dirname(__file__))
+import config
 from util.decorators import retry_on_error
 from util.logger import get_logger
 

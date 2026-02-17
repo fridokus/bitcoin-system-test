@@ -26,7 +26,7 @@ Verify Block Count
     [Arguments]    ${datadir}    ${expected_count}    ${rpcport}=${None}
     ${actual_count}=    Get Block Count    ${datadir}    rpcport=${rpcport}
     Should Be Equal As Integers    ${actual_count}    ${expected_count}
-    [Return]    ${actual_count}
+    RETURN    ${actual_count}
 
 Cleanup Test Environment
     [Documentation]    Stop nodes and clean up
