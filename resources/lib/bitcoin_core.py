@@ -6,9 +6,11 @@ import sys
 import time
 from pathlib import Path
 
-# Import config and logging
+# Add paths for importing config and util modules
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 sys.path.insert(0, os.path.dirname(__file__))
+
+# Import config and logging
 import config
 from util.logger import get_logger
 
